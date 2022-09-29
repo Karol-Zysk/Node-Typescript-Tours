@@ -1,14 +1,14 @@
 {
-  "name": "express-typescript",
+  "name": "turist",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Karol Zyśk",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -17,6 +17,8 @@
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "express": "^4.18.1"
+    "@types/morgan": "^1.9.3",
+    "express": "^4.18.1",
+    "morgan": "^1.10.0"
   }
 }

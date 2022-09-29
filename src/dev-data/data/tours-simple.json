@@ -1,4 +1,4 @@
- [
+[
   {
     "id": 0,
     "name": "The Forest Hiker",
@@ -136,5 +136,21 @@
   },
   { "id": 9, "name": "nowa wycieczka", "duration": 9, "difficulty": "easy" },
   { "id": 10, "name": "nowa wycieczka", "duration": 9, "difficulty": "easy" },
-  { "id": 11, "name": "test tour", "duration": 10, "difficulty": "easy" }
+  { "id": 11, "name": "test tour", "duration": 10, "difficulty": "easy" },
+  { "id": 12, "name": "test Tour", "duration": 12, "difficulty": "hard" },
+  { "id": 13, "name": "test Tour", "duration": 12, "difficulty": "hard" },
+  { "id": 14, "name": "test Tour", "duration": 12, "difficulty": "hard" },
+  { "id": 15, "name": "test Tour", "duration": 12, "difficulty": "hard" },
+  {
+    "0": "e",
+    "1": "l",
+    "2": "o",
+    "3": "e",
+    "4": "l",
+    "5": "o",
+    "id": 16,
+    "name": "test Tour",
+    "duration": 13,
+    "difficulty": "hard"
+  }
 ]
