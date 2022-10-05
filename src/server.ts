@@ -1,9 +1,8 @@
-import { app } from './app';
 import dotenv from 'dotenv';
+dotenv.config({ path: './config.env' });
+import { app } from './app';
 import mongoose from 'mongoose';
 import { Tour } from './models/tourModel';
-
-dotenv.config({ path: './.env' });
 
 const DB = `${process.env.DATABASE_CONNECTION}`.replace(
   '<PASSWORD>',

@@ -1,7 +1,7 @@
 [
   {
     "id": 0,
-    "name": "The Forest Hiker",
+    "name": "The Forest Hikker",
     "duration": 5,
     "maxGroupSize": 25,
     "difficulty": "easy",
@@ -133,24 +133,5 @@
     "imageCover": "tour-9-cover.jpg",
     "images": ["tour-9-1.jpg", "tour-9-2.jpg", "tour-9-3.jpg"],
     "startDates": ["2021-12-16,10:00", "2022-01-16,10:00", "2022-12-12,10:00"]
-  },
-  { "id": 9, "name": "nowa wycieczka", "duration": 9, "difficulty": "easy" },
-  { "id": 10, "name": "nowa wycieczka", "duration": 9, "difficulty": "easy" },
-  { "id": 11, "name": "test tour", "duration": 10, "difficulty": "easy" },
-  { "id": 12, "name": "test Tour", "duration": 12, "difficulty": "hard" },
-  { "id": 13, "name": "test Tour", "duration": 12, "difficulty": "hard" },
-  { "id": 14, "name": "test Tour", "duration": 12, "difficulty": "hard" },
-  { "id": 15, "name": "test Tour", "duration": 12, "difficulty": "hard" },
-  {
-    "0": "e",
-    "1": "l",
-    "2": "o",
-    "3": "e",
-    "4": "l",
-    "5": "o",
-    "id": 16,
-    "name": "test Tour",
-    "duration": 13,
-    "difficulty": "hard"
   }
 ]
