@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './config.env' });
 import { app } from './app';
 import mongoose from 'mongoose';
-import { Tour } from './models/tourModel';
 
 const DB = `${process.env.DATABASE_CONNECTION}`.replace(
   '<PASSWORD>',
@@ -20,20 +19,6 @@ mongoose
     console.log('connection good ');
   });
 
-const testTour = new Tour({
-  name: 'New Tour',
-  rating: 4.7,
-  price: 4000,
-});
-
-// testTour
-//   .save()
-//   .then((doc) => {
-//     console.log(doc);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
 
 const port = process.env.PORT || 3000;
 
