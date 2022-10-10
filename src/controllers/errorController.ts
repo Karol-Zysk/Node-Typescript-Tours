@@ -7,6 +7,24 @@ const handleCastErrorDB = (err: any) => {
   return new AppError(message, 400);
 };
 
+const handleDuplicateFieldsDB = (err: any) => {
+  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  console.log(value);
+
+  const message = `Duplicate field value: ${value}. Please use another value!`;
+  return new AppError(message, 400);
+};
+const handleValidationErrorDB = (err: any) => {
+  const errors = Object.values(err.errors).map((el) => {
+    if (el instanceof Error) {
+      el.message;
+    }
+  });
+
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 const errorSendDev = (err: any, req: Request, res: Response) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -23,6 +41,7 @@ const errorSendProd = (err: any, res: Response) => {
       message: err.message,
     });
   } else {
+    console.error('ERROR 💥', err);
     res.status(err.statusCode).json({
       status: 'error',
       message: 'Something went very wrong',
@@ -46,14 +65,13 @@ export const globalErrorHandler = (
   } else if (isInProduction === 'production') {
     console.log(err);
 
-    let error = { ...err };
-    if (err.stack.indexOf('CastError', 0) === 0) error.name = 'CastError';
-    // console.log(err.__proto__.name);
-    // console.log(err.name);
+    let error = Object.create(err);
 
-    if (error.name === 'CastError') {
-      error = handleCastErrorDB(error);
-    }
+    // Functions to transform mongoose errors into meaningful ones.
+    if (err.name === 'CastError') error = handleCastErrorDB(error);
+    if (err.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (err.name === `ValidationError`) error = handleValidationErrorDB(error);
+
     errorSendProd(error, res);
   }
 };
