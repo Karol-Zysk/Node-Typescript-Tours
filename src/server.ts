@@ -3,6 +3,8 @@ dotenv.config({ path: './config.env' });
 import { app } from './app';
 import mongoose from 'mongoose';
 
+
+
 const DB = `${process.env.DATABASE_CONNECTION}`.replace(
   '<PASSWORD>',
   `${process.env.DATABASE_PASSWORD}`
@@ -18,7 +20,6 @@ mongoose
   .then((con) => {
     console.log('connection good ');
   });
-
 
 const port = process.env.PORT || 3000;
 
