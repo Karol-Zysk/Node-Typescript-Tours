@@ -9,7 +9,6 @@ const handleCastErrorDB = (err: any) => {
 
 const handleDuplicateFieldsDB = (err: any) => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -49,8 +48,6 @@ const errorSendProd = (err: any, res: Response) => {
   }
 };
 
-const isInProduction = 'production';
-
 export const globalErrorHandler = (
   err: any,
   req: Request,
@@ -60,14 +57,11 @@ export const globalErrorHandler = (
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  if (isInProduction === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     errorSendDev(err, req, res);
-  } else if (isInProduction === 'production') {
-    console.log(err);
-
+  } else if (process.env.NODE_ENV === 'production') {
     let error = Object.create(err);
 
-    // Functions to transform mongoose errors into meaningful ones.
     if (err.name === 'CastError') error = handleCastErrorDB(error);
     if (err.code === 11000) error = handleDuplicateFieldsDB(error);
     if (err.name === `ValidationError`) error = handleValidationErrorDB(error);
