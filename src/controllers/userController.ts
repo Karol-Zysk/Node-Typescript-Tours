@@ -7,6 +7,7 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
   res.status(200).json({
     message: 'user list',
+    results: userList.length,
     data: {
       users: userList,
     },
