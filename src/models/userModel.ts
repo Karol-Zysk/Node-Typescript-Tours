@@ -1,10 +1,31 @@
 import mongoose, { Document, HookNextFunction, Schema } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+
+interface IUser {
+  name: string;
+  email: string;
+  role: string;
+  photo: string;
+  password: string;
+  passwordConfirm: string;
+  passwordChangedAt: Date | undefined;
+  passwordResetToken: string | undefined;
+  passwordResetExpires: Date | number | undefined;
+}
+
+export interface IUserDocument extends IUser, Document {
+  correctPassword: (
+    password: string | undefined,
+    userPassword: string | undefined
+  ) => Promise<boolean>;
+  changedPassword: () => Promise<boolean>;
+  userPasswordResetToken: () => Promise<string>;
+}
 
 const userScheema: Schema<IUserDocument> = new mongoose.Schema({
   name: { type: String, required: [true, 'Name is required'], unique: true },
-  user: { type: String },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -12,10 +33,10 @@ const userScheema: Schema<IUserDocument> = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
-  passwordChangedAt: {
-    type: Date,
-    default: Date.now(),
-    required: [true, 'Please provide a changedAt'],
+  role: {
+    type: String,
+    default: 'user',
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
   },
   photo: { type: String },
   password: {
@@ -35,6 +56,11 @@ const userScheema: Schema<IUserDocument> = new mongoose.Schema({
       'password and confirmation password must be the same',
     ],
   },
+  passwordChangedAt: {
+    type: Date,
+  },
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 userScheema.pre(
@@ -59,6 +85,13 @@ userScheema.pre(
   }
 );
 
+userScheema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  //@ts-ignore
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 //Check if password given by user is equal to password from DB
 userScheema.methods.correctPassword = async function (
   candidatePassword,
@@ -67,22 +100,32 @@ userScheema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-interface IUser {
-  passwordChangedAt: Date;
-}
-
-interface IUserDocument extends IUser, Document {
-  changedPassword: () => Promise<boolean>;
-}
 //Check if user currently change password
 userScheema.methods.changedPassword = async function (JWTTimestamp) {
   if (this.passwordChangedAt) {
-    const changedTimeStamp = this.passwordChangedAt.getTime() / 1000;
+    let changedTimeStamp = this.passwordChangedAt.getTime() / 1000;
+    changedTimeStamp = parseInt(changedTimeStamp.toString(), 10);
 
     return JWTTimestamp < changedTimeStamp;
   }
 
   return false;
+};
+
+//creating password reset token, valid for 10min
+userScheema.methods.userPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 export const User = mongoose.model('User', userScheema);

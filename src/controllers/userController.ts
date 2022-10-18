@@ -1,6 +1,8 @@
-import { Request, Response } from 'express';
-import { User } from '../models/userModel';
+import { NextFunction, Request, Response } from 'express';
+import { IUserDocument, User } from '../models/userModel';
+import { AppError } from '../utils/appError';
 import { catchAsync } from '../utils/catchAsync';
+import { filterObj } from '../utils/filterBody';
 
 export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const userList = await User.find();
@@ -24,6 +26,33 @@ export const createUser = (req: Request, res: Response) => {
     message: 'user created',
   });
 };
+
+export const updateMe = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.password || req.body.passwordConfirm) {
+      return next(new AppError("You can't update password here", 400));
+    }
+    //Filter not allowed field names
+    const filteredBody = filterObj(req.body, 'name', 'email');
+    //Update User
+    const updatedUser: IUserDocument = await User.findByIdAndUpdate(
+      res.locals.user._id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    res.status(200).json({
+      status: 'success',
+      body: {
+        user: updatedUser,
+      },
+    });
+  }
+);
+
 export const deleteUser = (req: Request, res: Response) => {
   if (Number(req.params.id) > 5) {
     return res.status(404).json({

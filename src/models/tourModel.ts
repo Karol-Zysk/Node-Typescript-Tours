@@ -109,7 +109,6 @@ tourSchema.pre(/^find/, function (this, next: HookNextFunction): void {
 tourSchema.pre(
   'aggregate',
   function (this: Aggregate<[Object]>, next: HookNextFunction) {
-    console.log(this);
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
     next();
   }

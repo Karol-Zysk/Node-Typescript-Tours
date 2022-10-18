@@ -6,7 +6,7 @@ export interface ICatchAsync {
   (
     req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
     res: Response<any, Record<string, any>>,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void>;
   (
     arg0: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,

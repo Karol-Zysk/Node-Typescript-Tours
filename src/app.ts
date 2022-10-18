@@ -12,8 +12,6 @@ export const app: Express = express();
 app.use(express.json());
 app.use(morgan('dev'));
 app.use((req, res, next) => {
-  console.log(req.headers);
-
   next();
 });
 
