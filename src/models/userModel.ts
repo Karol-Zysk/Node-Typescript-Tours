@@ -8,7 +8,7 @@ interface IUser {
   email: string;
   role: string;
   photo: string;
-  password: string;
+  password: string | undefined;
   passwordConfirm: string;
   passwordChangedAt: Date | undefined;
   passwordResetToken: string | undefined;
@@ -61,6 +61,11 @@ const userScheema: Schema<IUserDocument> = new mongoose.Schema({
   },
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    select: false,
+    default: true,
+  },
 });
 
 userScheema.pre(
@@ -89,6 +94,12 @@ userScheema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
   //@ts-ignore
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+//@ts-ignore
+userScheema.pre(/^find/, function (this: any, next) {
+  //This points to the querry
+  this.find({ active: { $ne: false } });
   next();
 });
 

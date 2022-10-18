@@ -22,7 +22,7 @@ mongoose
   });
 
 const tours = JSON.parse(
-  readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
+  readFileSync(`${__dirname}/tours.json`, 'utf-8')
 );
 
 export const seederScript = async () => {

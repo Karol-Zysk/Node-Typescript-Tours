@@ -5,7 +5,7 @@ import { catchAsync } from '../utils/catchAsync';
 import { filterObj } from '../utils/filterBody';
 
 export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const userList = await User.find();
+  const userList: IUserDocument[] = await User.find();
 
   res.status(200).json({
     message: 'user list',
@@ -49,6 +49,17 @@ export const updateMe = catchAsync(
       body: {
         user: updatedUser,
       },
+    });
+  }
+);
+
+export const deleteMe = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await User.findByIdAndUpdate(res.locals.user._id, { active: false });
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
     });
   }
 );

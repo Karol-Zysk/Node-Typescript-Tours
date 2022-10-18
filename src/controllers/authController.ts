@@ -20,6 +20,21 @@ const createSendToken = (
 ) => {
   const token = signToken(user._id);
 
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() +
+        Number(`${process.env.JWT_COOKIE_EXPIRES_IN}`) * 24 * 60 * 60 * 1000
+    ),
+    secure: false,
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+//Remove password from output
+  user.password = undefined;
+
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -31,16 +46,14 @@ const createSendToken = (
 
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const { name, email, password, passwordConfirm }: IUserDocument = req.body;
     const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm,
-      role: req.body.role,
-      passwordChangedAt: req.body.passwordChangedAt,
-      passwordResetToken: req.body.passwordResetToken,
-      passwordResetExpires: req.body.passwordResetExpires,
+      name,
+      email,
+      password,
+      passwordConfirm,
     });
+
     createSendToken(newUser, 201, res);
   }
 );
@@ -57,7 +70,7 @@ export const login = catchAsync(
       return next(new AppError('Please provide email and password', 400));
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user: IUserDocument = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError('incorrect email or password', 401));
