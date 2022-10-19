@@ -17,7 +17,6 @@ export const aliasTopTour = async (
 
 export const getAllTours = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
     const features = new APIFeatures(Tour.find(), req.query)
       .filter()
       .sort()
@@ -38,7 +37,7 @@ export const getAllTours = catchAsync(
 
 export const getTour = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id)
 
     if (!tour) {
       return next(new AppError('There is no tour with this ID', 404));

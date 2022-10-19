@@ -1,6 +1,5 @@
 import mongoose, { Aggregate, HookNextFunction, Schema } from 'mongoose';
 import slugify from 'slugify';
-import { User } from './userModel';
 
 const tourSchema = new mongoose.Schema(
   {
@@ -44,6 +43,7 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'tour must have price'],
     },
+    // reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     priceDiscount: {
       type: Number,
       validate: {
@@ -130,23 +130,33 @@ tourSchema.pre(
   }
 );
 
-tourSchema.pre(
-  'save',
-  async function (this: { guides: Schema.Types.ObjectId[] }, next) {
-    const guidesPromises = this.guides.map(
-      async (id) => await User.findById(id)
-    );
-    this.guides = await Promise.all(guidesPromises);
-    next();
-  }
-);
+//EMBENIG USER IN TOUR MODEL
+
+// tourSchema.pre(
+//   'save',
+//   async function (this: { guides: Schema.Types.ObjectId[] }, next) {
+//     const guidesPromises = this.guides.map(
+//       async (id) => await User.findById(id)
+//     );
+//     this.guides = await Promise.all(guidesPromises);
+//     next();
+//   }
+// );
+
 //QUERY MIDDLEWARE RUNS BEFORE OR AFTER CERTAIN QUERY IS EXECUTED
 tourSchema.pre(/^find/, function (this, next: HookNextFunction): void {
   //@ts-ignore
   this.find({ secretTour: { $ne: true } });
   next();
 });
+tourSchema.pre(/^find/, function (this, next: HookNextFunction): void {
+  this.populate({
+    path: 'guides',
+    select: '-__v',
+  });
 
+  next();
+});
 //AGGREGATION MIDDLEWARE - EXCLUDE SECRET TOUR
 tourSchema.pre(
   'aggregate',

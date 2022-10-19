@@ -11,7 +11,7 @@ import {
   updateTour,
 } from '../controllers/tourController';
 
-export const router = express.Router();
+const router = express.Router();
 
 router.route('/top-5-cheap').get(aliasTopTour, getAllTours);
 router.route('/get-stats').get(getTourStats);
