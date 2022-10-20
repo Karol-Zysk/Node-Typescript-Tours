@@ -1,27 +1,28 @@
 import { NextFunction, Request, Response } from 'express';
-import { IreviewDocument, Review } from '../models/reviewModel';
+import { IReviewDocument, Review } from '../models/reviewModel';
 import { catchAsync } from '../utils/catchAsync';
+import { deleteOne } from './handlerFactory';
 
 export const createReview = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const newReview: IreviewDocument = await Review.create({
-      review: req.body.review,
-      rating: req.body.rating,
-      tour: req.body.tour,
-      user: res.locals.user._id,
-    });
+    if (!req.body.tour) req.body.tour = req.params.tourId;
+    if (!req.body.user) req.body.user = res.locals.user._id;
+    const newReview: IReviewDocument = await Review.create(req.body);
 
     res.status(201).json({
       status: 'success',
       data: {
-        reviev: newReview,
+        review: newReview,
       },
     });
   }
 );
 export const getAllreviews = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const allRevievs = await Review.find();
+    let filter = {};
+    if (req.params.tourId) filter = { tour: req.params.tourId };
+
+    const allRevievs = await Review.find(filter);
 
     res.status(200).json({
       status: 'success',
@@ -32,3 +33,5 @@ export const getAllreviews = catchAsync(
     });
   }
 );
+
+export const deleteReview = deleteOne(Review);

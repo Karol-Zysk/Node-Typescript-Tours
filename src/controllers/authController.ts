@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { IUserDocument, User } from '../models/userModel';
+import { User } from '../models/userModel';
 import { catchAsync } from '../utils/catchAsync';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
@@ -7,6 +7,8 @@ import { AppError } from '../utils/appError';
 import { CurrentUser } from '../interfaces/interfaces';
 import { sendEmail } from '../utils/email';
 import crypto from 'crypto';
+import { IUser, IUserDocument, Roles } from '../interfaces/userModelInterfaces';
+import { Document } from 'mongoose';
 
 const signToken = (id: string) =>
   jwt.sign({ id }, `${process.env.JWT_SECRET}`, {
@@ -14,7 +16,7 @@ const signToken = (id: string) =>
   });
 
 const createSendToken = (
-  user: IUserDocument,
+  user: IUserDocument | (IUserDocument & Document<any, any, IUserDocument>),
   statusCode: number,
   res: Response
 ) => {
@@ -32,7 +34,7 @@ const createSendToken = (
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
-//Remove password from output
+  //Remove password from output
   user.password = undefined;
 
   res.status(statusCode).json({
@@ -46,7 +48,7 @@ const createSendToken = (
 
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, email, password, passwordConfirm }: IUserDocument = req.body;
+    const { name, email, password, passwordConfirm }: IUser = req.body;
     const newUser = await User.create({
       name,
       email,
@@ -70,7 +72,7 @@ export const login = catchAsync(
       return next(new AppError('Please provide email and password', 400));
     }
 
-    const user: IUserDocument = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError('incorrect email or password', 401));
@@ -127,7 +129,7 @@ export const protect = catchAsync(
 
 //NICE TRICK
 //SETTING VARIABLES TO MIDDLEWARE
-export const restrictTo = (...roles: string[]) => {
+export const restrictTo = (...roles: Roles[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     //CHECK IF USER HAS THE ROLE
     if (!roles.includes(res.locals.user.role)) {
@@ -140,7 +142,7 @@ export const restrictTo = (...roles: string[]) => {
 export const forgotPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     //Get user based on posted email
-    const user: IUserDocument = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
       return next(new AppError('There is no user with this email', 404));
@@ -186,14 +188,14 @@ export const resetPassword = catchAsync(
       .update(req.params.token)
       .digest('hex');
 
-    const user: IUserDocument = await User.findOne({
+    const user = await User.findOne({
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() },
     });
 
     if (!user) {
       next(new AppError('not valid or expired reset token', 400));
-    }
+    } else{
 
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
@@ -201,7 +203,7 @@ export const resetPassword = catchAsync(
     user.passwordResetExpires = undefined;
     await user.save();
 
-    createSendToken(user, 200, res);
+    createSendToken(user, 200, res)}
   }
 );
 
@@ -221,9 +223,7 @@ export const updatePassword = catchAsync(
   ) => {
     const { password, passwordConfirm, passwordCurrent } = req.body;
 
-    const user: IUserDocument = await User.findOne(res.locals.user._id).select(
-      '+password'
-    );
+    const user = await User.findOne(res.locals.user._id).select('+password');
 
     if (
       !user ||

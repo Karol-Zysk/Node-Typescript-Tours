@@ -3,6 +3,7 @@ import { Tour } from '../models/tourModel';
 import { APIFeatures } from '../utils/apiFeatures';
 import { AppError } from '../utils/appError';
 import { catchAsync } from '../utils/catchAsync';
+import { deleteOne } from './handlerFactory';
 
 export const aliasTopTour = async (
   req: Request,
@@ -37,7 +38,7 @@ export const getAllTours = catchAsync(
 
 export const getTour = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const tour = await Tour.findById(req.params.id)
+    const tour = await Tour.findById(req.params.id).populate('reviews');
 
     if (!tour) {
       return next(new AppError('There is no tour with this ID', 404));
@@ -83,21 +84,8 @@ export const updateTour = catchAsync(
   }
 );
 
-export const deleteTour = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
-    const tour = await Tour.findByIdAndDelete(id);
+export const deleteTour = deleteOne(Tour);
 
-    if (!tour) {
-      return next(new AppError('There is no tour with this ID', 404));
-    }
-
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  }
-);
 
 export const getTourStats = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

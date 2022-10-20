@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { IUserDocument, User } from '../models/userModel';
+import { User } from '../models/userModel';
 import { AppError } from '../utils/appError';
 import { catchAsync } from '../utils/catchAsync';
 import { filterObj } from '../utils/filterBody';
+import { deleteOne } from './handlerFactory';
 
 export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const userList: IUserDocument[] = await User.find();
+  const userList = await User.find();
 
   res.status(200).json({
     message: 'user list',
@@ -35,7 +36,7 @@ export const updateMe = catchAsync(
     //Filter not allowed field names
     const filteredBody = filterObj(req.body, 'name', 'email');
     //Update User
-    const updatedUser: IUserDocument = await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       res.locals.user._id,
       filteredBody,
       {
@@ -64,15 +65,4 @@ export const deleteMe = catchAsync(
   }
 );
 
-export const deleteUser = (req: Request, res: Response) => {
-  if (Number(req.params.id) > 5) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'no tour with this ID',
-    });
-  } else
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-};
+export const deleteUser = deleteOne(User);

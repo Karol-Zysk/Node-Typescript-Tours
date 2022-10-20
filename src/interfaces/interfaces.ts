@@ -1,4 +1,4 @@
-import { SigningKeyCallback } from "jsonwebtoken";
+import { SigningKeyCallback } from 'jsonwebtoken';
 
 export interface EmailOptions {
   email: string;

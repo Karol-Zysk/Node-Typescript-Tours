@@ -1,16 +1,16 @@
-import mongoose, { HookNextFunction, ObjectId, Schema } from 'mongoose';
+import mongoose, { Model, ObjectId, Schema } from 'mongoose';
 
-export interface IreviewDocument extends Document {
-  review: string | undefined;
+export interface IReviewDocument {
+  text: string | undefined;
   rating: number;
   createdAt: Date;
   user: ObjectId;
   tour: ObjectId;
 }
 
-const reviewSchema: Schema<IreviewDocument> = new mongoose.Schema(
+const reviewSchema: Schema<IReviewDocument> = new mongoose.Schema(
   {
-    review: {
+    text: {
       type: String,
       required: [true, 'review cannot be empty'],
     },
@@ -41,9 +41,13 @@ const reviewSchema: Schema<IreviewDocument> = new mongoose.Schema(
   }
 );
 
-reviewSchema.pre(/^find/, function (this, next: HookNextFunction): void {
-  this.populate({ path: 'user', select: 'name  photo' });
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'user',
+    options: { select: 'name photo' },
+  });
+
   next();
 });
 
-export const Review = mongoose.model('review', reviewSchema);
+export const Review = mongoose.model<IReviewDocument>('Review', reviewSchema);

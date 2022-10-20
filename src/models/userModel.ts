@@ -2,27 +2,7 @@ import mongoose, { Document, HookNextFunction, Schema } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-
-interface IUser {
-  name: string;
-  email: string;
-  role: string;
-  photo: string;
-  password: string | undefined;
-  passwordConfirm: string;
-  passwordChangedAt: Date | undefined;
-  passwordResetToken: string | undefined;
-  passwordResetExpires: Date | number | undefined;
-}
-
-export interface IUserDocument extends IUser, Document {
-  correctPassword: (
-    password: string | undefined,
-    userPassword: string | undefined
-  ) => Promise<boolean>;
-  changedPassword: () => Promise<boolean>;
-  userPasswordResetToken: () => Promise<string>;
-}
+import { IUserDocument } from '../interfaces/userModelInterfaces';
 
 const userScheema: Schema<IUserDocument> = new mongoose.Schema({
   name: { type: String, required: [true, 'Name is required'], unique: true },
@@ -112,7 +92,7 @@ userScheema.methods.correctPassword = async function (
 };
 
 //Check if user currently change password
-userScheema.methods.changedPassword = async function (JWTTimestamp) {
+userScheema.methods.changedPassword = async function (JWTTimestamp: number) {
   if (this.passwordChangedAt) {
     let changedTimeStamp = this.passwordChangedAt.getTime() / 1000;
     changedTimeStamp = parseInt(changedTimeStamp.toString(), 10);
@@ -139,4 +119,4 @@ userScheema.methods.userPasswordResetToken = function () {
   return resetToken;
 };
 
-export const User = mongoose.model('User', userScheema);
+export const User = mongoose.model<IUserDocument>('User', userScheema);
