@@ -1,4 +1,5 @@
-import mongoose, { Model, ObjectId, Schema } from 'mongoose';
+import mongoose, { Model, ObjectId, Query, Schema } from 'mongoose';
+import { Tour } from './tourModel';
 
 export interface IReviewDocument {
   text: string | undefined;
@@ -49,5 +50,60 @@ reviewSchema.pre(/^find/, function (next) {
 
   next();
 });
+
+reviewSchema.static('calcRatingAvgAndReviewCount', async function (tourId) {
+  const [result] = await this.aggregate([
+    { $match: { tour: tourId } },
+    {
+      $group: {
+        _id: '$tour',
+        ratingsAverage: { $avg: '$rating' },
+        ratingsQuantity: { $sum: 1 },
+      },
+    },
+  ]);
+  if (!result) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: 4.5,
+      ratingsQuantity: 0,
+    });
+    return;
+  }
+  const { ratingsAverage, ratingsQuantity } = result;
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsAverage,
+    ratingsQuantity,
+  });
+  console.log(result);
+});
+
+reviewSchema.pre(
+  'save',
+  function (
+    this: {
+      tour: string;
+      constructor: { calcRatingAvgAndReviewCount: Function };
+    },
+    next
+  ) {
+    this.constructor.calcRatingAvgAndReviewCount(this.tour);
+    next();
+  }
+);
+
+reviewSchema.pre(
+  /^findOneAnd/,
+  async function (this: Query<any, any, {}, any>): Promise<void> {
+    //@ts-ignore
+    this.review = await this.model.findOne(this.getQuery());
+  }
+);
+reviewSchema.post(
+  /^findOneAnd/,
+  async function (this: Query<any, any, {}, any>) {
+    //@ts-ignore
+    this.review.constructor.calcRatingAvgAndReviewCount(this.review.tour);
+  }
+);
 
 export const Review = mongoose.model<IReviewDocument>('Review', reviewSchema);

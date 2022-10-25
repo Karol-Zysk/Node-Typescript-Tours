@@ -1,7 +1,8 @@
 import mongoose, { Aggregate, HookNextFunction, Schema } from 'mongoose';
 import slugify from 'slugify';
+import { ITourModel } from '../interfaces/tourModelInterfaces';
 
-const tourSchema = new mongoose.Schema(
+const tourSchema = new mongoose.Schema<ITourModel>(
   {
     name: {
       type: String,
@@ -117,6 +118,9 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('reviews', {
   ref: 'Review',
   localField: '_id',
@@ -128,14 +132,11 @@ tourSchema.virtual('durationWeeks').get(function (this: { duration: number }) {
 });
 
 //DOCUMENT MIDDLEWARE / RUNS BEFORE .save() and .create()
-tourSchema.pre(
-  'save',
-  function (this: { slug: string; name: string }, next: HookNextFunction) {
-    this.slug = slugify(this.name, { lower: true });
+tourSchema.pre('save', function (this, next: HookNextFunction) {
+  this.slug = slugify(this.name, { lower: true });
 
-    next();
-  }
-);
+  next();
+});
 
 //EMBENIG USER IN TOUR MODEL
 
@@ -173,4 +174,4 @@ tourSchema.pre(
   }
 );
 
-export const Tour = mongoose.model('Tour', tourSchema);
+export const Tour = mongoose.model<ITourModel>('Tour', tourSchema);

@@ -3,29 +3,21 @@ import { User } from '../models/userModel';
 import { AppError } from '../utils/appError';
 import { catchAsync } from '../utils/catchAsync';
 import { filterObj } from '../utils/filterBody';
-import { deleteOne } from './handlerFactory';
+import {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} from './handlerFactory';
 
-export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const userList = await User.find();
+export const getAllUsers = getAll(User);
+export const getUser = getOne(User);
+export const createUser = createOne(User);
 
-  res.status(200).json({
-    message: 'user list',
-    results: userList.length,
-    data: {
-      users: userList,
-    },
-  });
-});
-
-export const getUser = (req: Request, res: Response) => {
-  res.status(200).json({
-    message: 'user',
-  });
-};
-export const createUser = (req: Request, res: Response) => {
-  res.status(201).json({
-    message: 'user created',
-  });
+export const getMe = (req: Request, res: Response, next: NextFunction) => {
+  req.params.id = res.locals.user.id;
+  next();
 };
 
 export const updateMe = catchAsync(
@@ -66,3 +58,4 @@ export const deleteMe = catchAsync(
 );
 
 export const deleteUser = deleteOne(User);
+export const updateUser = updateOne(User);

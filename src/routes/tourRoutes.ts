@@ -19,13 +19,30 @@ router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5-cheap').get(aliasTopTour, getAllTours);
 router.route('/get-stats').get(getTourStats);
-router.route('/busy-month/:year').get(getMonthlyPlan);
+router
+  .route('/busy-month/:year')
+  .get(
+    protect,
+    restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE, Roles.LEAD_GUIDE, Roles.GUIDE),
+    getMonthlyPlan
+  );
 
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
-  .delete(protect, restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE), deleteTour);
-router.route('/').get(protect, getAllTours).post(createTour);
+  .patch(
+    protect,
+    restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE, Roles.LEAD_GUIDE),
+    updateTour
+  )
+  .delete(
+    protect,
+    restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE, Roles.LEAD_GUIDE),
+    deleteTour
+  );
+router
+  .route('/')
+  .get(protect, getAllTours)
+  .post(protect, restrictTo(Roles.ADMIN), createTour);
 
 export default router;
