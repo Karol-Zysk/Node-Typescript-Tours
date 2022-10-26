@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
+import path from 'path';
+import pug from 'pug';
 
 import { globalErrorHandler } from './controllers/errorController';
 import tourRouter from './routes/tourRoutes';
@@ -14,6 +16,12 @@ import reviewRouter from './routes/reviewRoutes';
 import { AppError } from './utils/appError';
 
 export const app: Express = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+//serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Set security HTTP headers
 app.use(helmet());
@@ -50,6 +58,10 @@ app.use(
     ],
   })
 );
+
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);

@@ -74,8 +74,9 @@ reviewSchema.static('calcRatingAvgAndReviewCount', async function (tourId) {
     ratingsAverage,
     ratingsQuantity,
   });
-  console.log(result);
 });
+
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 reviewSchema.pre(
   'save',
@@ -95,14 +96,14 @@ reviewSchema.pre(
   /^findOneAnd/,
   async function (this: Query<any, any, {}, any>): Promise<void> {
     //@ts-ignore
-    this.review = await this.model.findOne(this.getQuery());
+    this.review = await this.model.findOne();
   }
 );
 reviewSchema.post(
   /^findOneAnd/,
   async function (this: Query<any, any, {}, any>) {
     //@ts-ignore
-    this.review.constructor.calcRatingAvgAndReviewCount(this.review.tour);
+    await this.review.constructor.calcRatingAvgAndReviewCount(this.review.tour);
   }
 );
 

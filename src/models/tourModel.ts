@@ -1,6 +1,18 @@
-import mongoose, { Aggregate, HookNextFunction, Schema } from 'mongoose';
+import mongoose, { HookNextFunction, Schema } from 'mongoose';
 import slugify from 'slugify';
-import { ITourModel } from '../interfaces/tourModelInterfaces';
+import { ITourModel, Location } from '../interfaces/tourModelInterfaces';
+
+const locationSchema = new Schema<Location>({
+  type: {
+    type: String,
+    enum: ['Point'],
+    default: 'Point',
+  },
+  coordinates: [Number],
+  address: String,
+  description: String,
+  day: Number,
+});
 
 const tourSchema = new mongoose.Schema<ITourModel>(
   {
@@ -35,6 +47,7 @@ const tourSchema = new mongoose.Schema<ITourModel>(
       default: 4.5,
       min: [1, 'Rating must be above 1'],
       max: [5, 'Rating must be below 5'],
+      set: (val: number) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
@@ -81,30 +94,8 @@ const tourSchema = new mongoose.Schema<ITourModel>(
       type: Boolean,
       default: false,
     },
-    startLocation: {
-      // GeoJSON
-      type: {
-        type: String,
-        default: 'Point',
-        enum: ['Point'],
-      },
-      coordinates: [Number],
-      address: String,
-      description: String,
-    },
-    locations: [
-      {
-        type: {
-          type: String,
-          default: 'Point',
-          enum: ['Point'],
-        },
-        coordinates: [Number],
-        address: String,
-        description: String,
-        day: Number,
-      },
-    ],
+    startLocation: locationSchema,
+    locations: [locationSchema],
     guides: [
       {
         type: Schema.Types.ObjectId,
@@ -120,6 +111,7 @@ const tourSchema = new mongoose.Schema<ITourModel>(
 
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 tourSchema.virtual('reviews', {
   ref: 'Review',
@@ -165,13 +157,13 @@ tourSchema.pre(/^find/, function (this, next: HookNextFunction): void {
 
   next();
 });
-//AGGREGATION MIDDLEWARE - EXCLUDE SECRET TOUR
-tourSchema.pre(
-  'aggregate',
-  function (this: Aggregate<[Object]>, next: HookNextFunction) {
-    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-    next();
-  }
-);
+// AGGREGATION MIDDLEWARE - EXCLUDE SECRET TOUR
+// tourSchema.pre(
+//   'aggregate',
+//   function (this: Aggregate<[Object]>, next: HookNextFunction) {
+//     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//     next();
+//   }
+// );
 
 export const Tour = mongoose.model<ITourModel>('Tour', tourSchema);

@@ -4,6 +4,7 @@ import { Tour } from '../models/tourModel';
 import { APIFeatures } from '../utils/apiFeatures';
 import { AppError } from '../utils/appError';
 import { catchAsync } from '../utils/catchAsync';
+import { ParsedQs } from 'qs';
 import {
   createOne,
   deleteOne,
@@ -110,5 +111,86 @@ export const getMonthlyPlan = catchAsync(
       },
     });
     next();
+  }
+);
+
+enum Unit {
+  mi = 'mi',
+  km = 'km',
+}
+
+interface IGeoTourParams extends ParsedQs {
+  distance: string;
+  latlng: string;
+  unit: Unit;
+}
+
+export const getToursWithin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { distance, latlng, unit } = req.params as IGeoTourParams;
+    const [lat, lng] = latlng.split(',');
+
+    const radious =
+      unit == Unit.mi ? Number(distance) / 3963.2 : Number(distance) / 6378.1;
+
+    if (!lat || !lng) {
+      return next(
+        new AppError(
+          'please provide lattitude, longitude in format: lat,long',
+          400
+        )
+      );
+    }
+    console.log(radious, lat, lng);
+
+    const tours = await Tour.find({
+      startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radious] } },
+    });
+    console.log(tours);
+
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        data: tours,
+      },
+    });
+  }
+);
+export const getDistancesByLatLang = catchAsync(
+  async (req: Request<{}, {}, {}>, res: Response, next: NextFunction) => {
+    const { latlng, unit } = req.params as IGeoTourParams;
+    const [lat, lng] = latlng.split(',');
+    if (!lat || !lng) {
+      return next(
+        new AppError(
+          'Please provide latitude and longitude in format lat,lng',
+          400
+        )
+      );
+    }
+    if (!['mi', 'km'].includes(unit)) {
+      return next(new AppError('Please provide unit (mi or km)', 400));
+    }
+    const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+    const results = await Tour.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [Number(lng), Number(lat)],
+          },
+          distanceField: 'distance',
+          distanceMultiplier: multiplier,
+        },
+      },
+      {
+        $project: {
+          distance: 1,
+          name: 1,
+        },
+      },
+    ]);
+    res.status(200).json({ status:"success", count: results.length, results });
   }
 );

@@ -5,9 +5,11 @@ import {
   createTour,
   deleteTour,
   getAllTours,
+  getDistancesByLatLang,
   getMonthlyPlan,
   getTour,
   getTourStats,
+  getToursWithin,
   updateTour,
 } from '../controllers/tourController';
 import reviewRouter from './reviewRoutes';
@@ -26,6 +28,12 @@ router
     restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE, Roles.LEAD_GUIDE, Roles.GUIDE),
     getMonthlyPlan
   );
+
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+
+router.route('/distances/:latlng/unit/:unit').get(getDistancesByLatLang);
 
 router
   .route('/:id')
