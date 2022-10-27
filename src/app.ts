@@ -8,11 +8,13 @@ import xss from 'xss-clean';
 import hpp from 'hpp';
 import path from 'path';
 import pug from 'pug';
+import cookieParser from 'cookie-parser';
 
 import { globalErrorHandler } from './controllers/errorController';
 import tourRouter from './routes/tourRoutes';
 import userRouter from './routes/userRoutes';
 import reviewRouter from './routes/reviewRoutes';
+import viewRouter from './routes/viewRoutes';
 import { AppError } from './utils/appError';
 
 export const app: Express = express();
@@ -24,7 +26,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Set security HTTP headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+  })
+);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -40,6 +48,7 @@ app.use('/api', limiter);
 
 //Body parser -> reading data from body to req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 //Data sanitization against NoSQL  data injection
 app.use(mongoSanitize());
@@ -59,10 +68,12 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
-  res.status(200).render('base');
+app.use((req, res, next) => {
+  console.log(req.cookies);
+  next();
 });
 
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

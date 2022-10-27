@@ -82,6 +82,35 @@ export const login = catchAsync(
   }
 );
 
+export const isLoggedIn = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.cookies.jwt) {
+      //verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt, //@ts-ignore
+        `${process.env.JWT_SECRET}`
+      );
+
+      const currentUser = await User.findById((<CurrentUser>decoded).id);
+      if (!currentUser) {
+        return next();
+      }
+      //set promise to variable to return only boolean value
+      const isPasswordChanged = await currentUser.changedPassword(
+        (<CurrentUser>decoded).iat
+      );
+
+      if (isPasswordChanged) {
+        return next();
+      }
+      //GRANT ACCESS TO PROTECTED ROUTE
+      //SET USER DATA TO USE IN MIDDLEWARE
+      res.locals.user = currentUser;
+      return next();
+    }
+    return next();
+  }
+);
 export const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     //Check if there is token
@@ -92,6 +121,8 @@ export const protect = catchAsync(
       req.headers.authorization.startsWith('Bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
 
     if (!token) {
@@ -116,7 +147,7 @@ export const protect = catchAsync(
     );
 
     if (isPasswordChanged) {
-      next(
+    return  next(
         new AppError('User recently changed password, please log in again', 401)
       );
     }
@@ -195,15 +226,15 @@ export const resetPassword = catchAsync(
 
     if (!user) {
       next(new AppError('not valid or expired reset token', 400));
-    } else{
+    } else {
+      user.password = req.body.password;
+      user.passwordConfirm = req.body.passwordConfirm;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
 
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save();
-
-    createSendToken(user, 200, res)}
+      createSendToken(user, 200, res);
+    }
   }
 );
 

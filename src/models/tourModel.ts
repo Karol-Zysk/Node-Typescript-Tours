@@ -114,9 +114,9 @@ tourSchema.index({ slug: 1 });
 tourSchema.index({ startLocation: '2dsphere' });
 
 tourSchema.virtual('reviews', {
-  ref: 'Review',
-  localField: '_id',
-  foreignField: 'tour',
+	ref: 'Review',
+	foreignField: 'tour',
+	localField: '_id',
 });
 
 tourSchema.virtual('durationWeeks').get(function (this: { duration: number }) {

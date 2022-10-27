@@ -2,7 +2,7 @@ import mongoose, { Model, ObjectId, Query, Schema } from 'mongoose';
 import { Tour } from './tourModel';
 
 export interface IReviewDocument {
-  text: string | undefined;
+  review: string | undefined;
   rating: number;
   createdAt: Date;
   user: ObjectId;
@@ -11,7 +11,7 @@ export interface IReviewDocument {
 
 const reviewSchema: Schema<IReviewDocument> = new mongoose.Schema(
   {
-    text: {
+    review: {
       type: String,
       required: [true, 'review cannot be empty'],
     },
