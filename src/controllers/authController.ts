@@ -82,8 +82,12 @@ export const login = catchAsync(
   }
 );
 
-export const isLoggedIn = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const isLoggedIn = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
     if (req.cookies.jwt) {
       //verify token
       const decoded = await promisify(jwt.verify)(
@@ -108,9 +112,20 @@ export const isLoggedIn = catchAsync(
       res.locals.user = currentUser;
       return next();
     }
+  } catch (err) {
     return next();
   }
-);
+  return next();
+};
+
+export const logout = (req: Request, res: Response) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 5 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 export const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     //Check if there is token
@@ -147,7 +162,7 @@ export const protect = catchAsync(
     );
 
     if (isPasswordChanged) {
-    return  next(
+      return next(
         new AppError('User recently changed password, please log in again', 401)
       );
     }

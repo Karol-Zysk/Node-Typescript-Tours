@@ -12,6 +12,7 @@ import {
 import {
   forgotPassword,
   login,
+  logout,
   protect,
   resetPassword,
   restrictTo,
@@ -19,11 +20,11 @@ import {
   updatePassword,
 } from '../controllers/authController';
 import { Roles } from '../interfaces/userModelInterfaces';
-import { app } from '../app';
 const router = express.Router();
 
 router.post('/signup', signUp);
 router.post('/login', login);
+router.get('/logout', logout);
 router.post('/forgotpassword', forgotPassword);
 router.patch('/resetpassword/:token', resetPassword);
 

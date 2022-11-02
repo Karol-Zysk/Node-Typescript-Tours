@@ -15,7 +15,7 @@ export const getOverview = catchAsync(
 export const getTour = catchAsync(async (req, res, next) => {
   const [tour] = await Tour.find({ slug: req.params.slug }).populate('reviews');
 
-  console.log(tour);
+
 
   if (!tour) {
     return next(new AppError('There is no tour with that name.', 404));

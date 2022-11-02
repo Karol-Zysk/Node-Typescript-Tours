@@ -76,6 +76,7 @@ userScheema.pre('save', function (next) {
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
+
 //@ts-ignore
 userScheema.pre(/^find/, function (this: any, next) {
   //This points to the querry
@@ -88,6 +89,8 @@ userScheema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
+  console.log(candidatePassword, userPassword + 'elo');
+
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 

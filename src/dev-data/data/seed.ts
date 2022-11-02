@@ -48,7 +48,7 @@ export const seederScript = async () => {
       console.log('reviwes sucsessfully loaded')
     );
 
-    await mongoose.disconnect().then(() => console.log('already disconnected'));
+    // await mongoose.disconnect().then(() => console.log('already disconnected'));
   } catch (err) {
     console.log(err);
   }
