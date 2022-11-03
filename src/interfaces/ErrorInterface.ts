@@ -1,4 +1,5 @@
-export interface CustomError extends Error {
-  status?: string;
-  statusCode?: number;
+import { AppError } from '../utils/appError';
+
+export interface OptionalError {
+  err: AppError | null;
 }

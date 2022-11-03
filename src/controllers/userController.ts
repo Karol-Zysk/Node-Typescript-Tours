@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import multer, { FileFilterCallback } from 'multer';
+import sharp from 'sharp';
 import { User } from '../models/userModel';
 import { AppError } from '../utils/appError';
 import { catchAsync } from '../utils/catchAsync';
@@ -15,6 +17,42 @@ export const getAllUsers = getAll(User);
 export const getUser = getOne(User);
 export const createUser = createOne(User);
 
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    //@ts-ignore
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+export const uploadUserPhoto = upload.single('photo');
+
+export const resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${res.locals._id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+});
+
 export const getMe = (req: Request, res: Response, next: NextFunction) => {
   req.params.id = res.locals.user.id;
   next();
@@ -25,6 +63,8 @@ export const updateMe = catchAsync(
     if (req.body.password || req.body.passwordConfirm) {
       return next(new AppError("You can't update password here", 400));
     }
+    console.log(req.file);
+
     //Filter not allowed field names
     const filteredBody = filterObj(req.body, 'name', 'email');
     //Update User

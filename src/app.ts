@@ -1,4 +1,10 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, {
+  Express,
+  Request,
+  Response,
+  NextFunction,
+  urlencoded,
+} from 'express';
 
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -48,6 +54,7 @@ app.use('/api', limiter);
 
 //Body parser -> reading data from body to req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
 //Data sanitization against NoSQL  data injection

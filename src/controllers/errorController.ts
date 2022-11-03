@@ -30,27 +30,45 @@ const handleJsonWebTokenError = () =>
 const handleTokenExpiredError = () => new AppError('session has expired', 401);
 
 const errorSendDev = (err: any, req: Request, res: Response) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+  //CHECK IF API ERROR
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message,
   });
 };
 
-const errorSendProd = (err: any, res: Response) => {
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-  } else {
+const errorSendProd = (err: any, req: Request, res: Response) => {
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
     console.error('ERROR 💥', err);
-    res.status(err.statusCode).json({
+    return res.status(err.statusCode).json({
       status: 'error',
       message: 'Something went very wrong',
     });
   }
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
+    });
+  }
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later',
+  });
 };
 
 export const globalErrorHandler = (
@@ -73,6 +91,6 @@ export const globalErrorHandler = (
     if (err.name === `JsonWebTokenError`) error = handleJsonWebTokenError();
     if (err.name === `TokenExpiredError`) error = handleTokenExpiredError();
 
-    errorSendProd(error, res);
+    errorSendProd(error, req, res);
   }
 };

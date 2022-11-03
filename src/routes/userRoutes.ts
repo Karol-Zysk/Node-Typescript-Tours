@@ -8,6 +8,7 @@ import {
   updateMe,
   updateUser,
   getMe,
+  uploadUserPhoto,
 } from '../controllers/userController';
 import {
   forgotPassword,
@@ -20,6 +21,8 @@ import {
   updatePassword,
 } from '../controllers/authController';
 import { Roles } from '../interfaces/userModelInterfaces';
+import multer from 'multer';
+
 const router = express.Router();
 
 router.post('/signup', signUp);
@@ -29,9 +32,9 @@ router.post('/forgotpassword', forgotPassword);
 router.patch('/resetpassword/:token', resetPassword);
 
 router.use(protect);
-router.patch('/updatepassword', updatePassword);
+router.patch('/updatemypassword', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/updateme', updateMe);
+router.patch('/updateme', uploadUserPhoto, updateMe);
 router.delete('/deleteme', deleteMe);
 
 router.use(
