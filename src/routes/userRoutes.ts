@@ -9,6 +9,7 @@ import {
   updateUser,
   getMe,
   uploadUserPhoto,
+  resizeUserPhoto,
 } from '../controllers/userController';
 import {
   forgotPassword,
@@ -21,7 +22,6 @@ import {
   updatePassword,
 } from '../controllers/authController';
 import { Roles } from '../interfaces/userModelInterfaces';
-import multer from 'multer';
 
 const router = express.Router();
 
@@ -34,7 +34,7 @@ router.patch('/resetpassword/:token', resetPassword);
 router.use(protect);
 router.patch('/updatemypassword', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/updateme', uploadUserPhoto, updateMe);
+router.patch('/updateme', uploadUserPhoto, resizeUserPhoto, updateMe);
 router.delete('/deleteme', deleteMe);
 
 router.use(

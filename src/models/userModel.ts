@@ -18,7 +18,7 @@ const userScheema: Schema<IUserDocument> = new mongoose.Schema({
     default: 'user',
     enum: ['user', 'guide', 'lead-guide', 'admin'],
   },
-  photo: { type: String },
+  photo: { type: String, default: 'default.jpg' },
   password: {
     type: String,
     required: [true, 'Please provide a password'],

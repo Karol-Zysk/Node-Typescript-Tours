@@ -10,7 +10,9 @@ import {
   getTour,
   getTourStats,
   getToursWithin,
+  resizeTourImages,
   updateTour,
+  uploadTourImages,
 } from '../controllers/tourController';
 import reviewRouter from './reviewRoutes';
 import { Roles } from '../interfaces/userModelInterfaces';
@@ -41,6 +43,8 @@ router
   .patch(
     protect,
     restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE, Roles.LEAD_GUIDE),
+    uploadTourImages,
+    resizeTourImages,
     updateTour
   )
   .delete(

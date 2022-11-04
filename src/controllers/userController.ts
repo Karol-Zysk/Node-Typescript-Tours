@@ -19,6 +19,16 @@ export const createUser = createOne(User);
 
 const multerStorage = multer.memoryStorage();
 
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   }
+// });
+
 const multerFilter = (
   req: Request,
   file: Express.Multer.File,
@@ -42,13 +52,13 @@ export const uploadUserPhoto = upload.single('photo');
 export const resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
-  req.file.filename = `user-${res.locals._id}-${Date.now()}.jpeg`;
+  req.file.filename = `user-${res.locals.user.id}-${Date.now()}.jpeg`;
 
   await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`public/img/users/${req.file.filename}`);
+    .toFile(`/src/public/img/users/${req.file.filename}`);
 
   next();
 });
@@ -67,6 +77,7 @@ export const updateMe = catchAsync(
 
     //Filter not allowed field names
     const filteredBody = filterObj(req.body, 'name', 'email');
+    if (req.file) filteredBody.photo = req.file.filename;
     //Update User
     const updatedUser = await User.findByIdAndUpdate(
       res.locals.user._id,

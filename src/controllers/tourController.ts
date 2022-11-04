@@ -12,6 +12,8 @@ import {
   getOne,
   updateOne,
 } from './handlerFactory';
+import multer, { FileFilterCallback } from 'multer';
+import sharp from 'sharp';
 
 export const aliasTopTour = async (
   req: Request,
@@ -34,6 +36,58 @@ export const updateTour = updateOne(Tour);
 
 export const deleteTour = deleteOne(Tour);
 
+const storage = multer.memoryStorage();
+
+const multerFilter = (
+  _: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400));
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter: multerFilter,
+});
+
+export const resizeTourImages = catchAsync(
+  async (req: Request, _: Response, next: NextFunction) => {
+    //@ts-ignore
+    if (!req.files?.imageCover || !req.files?.images) return next();
+    req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+    //@ts-ignore
+    await sharp(req.files.imageCover[0].buffer)
+      .resize(2000, 1333)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`src/public/img/tours/${req.body.imageCover}`);
+    req.body.images = [];
+    await Promise.all(
+      //@ts-ignore
+      req.files.images.map(async (file: Express.Multer.File, i: number) => {
+        const image = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+        await sharp(file.buffer)
+          .resize(2000, 1333)
+          .toFormat('jpeg')
+          .jpeg({ quality: 90 })
+          .toFile(`src/public/img/tours/${image}`);
+
+        req.body.images.push(image);
+      })
+    );
+    next();
+  }
+);
+
+export const uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
 export const getTourStats = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const stats = await Tour.aggregate([
@@ -189,6 +243,6 @@ export const getDistancesByLatLang = catchAsync(
         },
       },
     ]);
-    res.status(200).json({ status:"success", count: results.length, results });
+    res.status(200).json({ status: 'success', count: results.length, results });
   }
 );
