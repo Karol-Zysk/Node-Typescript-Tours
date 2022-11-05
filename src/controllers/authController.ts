@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/appError';
 import { CurrentUser } from '../interfaces/interfaces';
-import { sendEmail } from '../utils/email';
+import { Email, sendEmail } from '../utils/email';
 import crypto from 'crypto';
 import { IUser, IUserDocument, Roles } from '../interfaces/userModelInterfaces';
 import { Document } from 'mongoose';
@@ -55,7 +55,8 @@ export const signUp = catchAsync(
       password,
       passwordConfirm,
     });
-
+    const url = `${req.protocol}://${req.get('host')}/me`;
+    await new Email(newUser, url).sendWelcome();
     createSendToken(newUser, 201, res);
   }
 );
@@ -198,19 +199,12 @@ export const forgotPassword = catchAsync(
 
     await user.save({ validateBeforeSave: false });
 
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/users/resetpassword/${resetToken}`;
-
-    const message = `Forgot password ? Submit patch request with new password and password confirm to ${resetURL}.\ Otherwise ignore this message`;
-
     try {
-      await sendEmail({
-        email: user.email,
-        subject: 'Your password reset token (valid for 10 min)',
-        message,
-      });
+      const resetURL = `${req.protocol}://${req.get(
+        'host'
+      )}/api/v1/users/resetpassword/${resetToken}`;
 
+      await new Email(user, resetURL).sendPasswordReset();
       res.status(200).json({
         status: 'success',
         message: `token sent  to ${user.email}`,
