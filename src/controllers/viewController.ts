@@ -4,6 +4,7 @@ import { catchAsync } from '../utils/catchAsync';
 import { Tour } from '../models/tourModel';
 import { AppError } from '../utils/appError';
 import { User } from '../models/userModel';
+import { Booking } from '../models/bookingModel';
 
 export const getOverview = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -31,12 +32,24 @@ export const getLoginForm = (req: Request, res: Response) => {
 
 export const getAccount = (req: Request, res: Response) => {
   res.status(200).render('account', { title: 'Account' });
-  console.log(res.locals);
 };
 
-export const updateUserData = catchAsync(async (req, res, next) => {
-  console.log(res.locals);
+export const getMyTours = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const bookings = await Booking.find({ user: res.locals.user._id });
+    console.log(bookings.tour + 'elo');
+    const tourIDs = bookings.map((el: { tour: any }) => el.tour);
+    const tours = await Tour.find({ _id: { $in: tourIDs } });
+    console.log(tours);
 
+    res.status(200).render('overview', {
+      title: 'All Tours',
+      tours,
+    });
+  }
+);
+
+export const updateUserData = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
     res.locals._id,
     {
@@ -48,7 +61,6 @@ export const updateUserData = catchAsync(async (req, res, next) => {
       runValidators: true,
     }
   );
-  console.log('elo');
 
   res.status(200).render('account', {
     title: 'Your account',

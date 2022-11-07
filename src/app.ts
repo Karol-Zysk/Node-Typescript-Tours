@@ -7,6 +7,7 @@ import express, {
 } from 'express';
 
 import morgan from 'morgan';
+import compression from 'compression'
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -75,7 +76,7 @@ app.use(
     ],
   })
 );
-
+app.use(compression());
 app.use((req, res, next) => {
   // console.log(req.cookies);
   next();

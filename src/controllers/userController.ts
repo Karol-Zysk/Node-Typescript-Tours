@@ -73,7 +73,6 @@ export const updateMe = catchAsync(
     if (req.body.password || req.body.passwordConfirm) {
       return next(new AppError("You can't update password here", 400));
     }
-    console.log(req.file);
 
     //Filter not allowed field names
     const filteredBody = filterObj(req.body, 'name', 'email');

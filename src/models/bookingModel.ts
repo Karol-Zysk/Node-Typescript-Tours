@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, HookNextFunction } from 'mongoose';
 
 const bookingSchema = new Schema(
   {
@@ -30,5 +30,10 @@ const bookingSchema = new Schema(
     toObject: { virtuals: true },
   }
 );
+
+bookingSchema.pre(/^find/, function (this, next: HookNextFunction) {
+  this.populate('user').populate({ path: 'tour', select: 'name' });
+  next();
+});
 
 export const Booking = model('Booking', bookingSchema);
