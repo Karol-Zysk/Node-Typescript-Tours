@@ -6,8 +6,8 @@ import {
   getBooking,
   getCheckoutSession,
   updateBooking,
-} from './../controllers/bookingController';
-import { protect, restrictTo } from './../controllers/authController';
+} from '../controllers/bookingController';
+import { protect, restrictTo } from '../controllers/authController';
 import { Roles } from '../interfaces/userModelInterfaces';
 
 const router = express.Router();

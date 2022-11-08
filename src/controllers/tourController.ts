@@ -65,7 +65,7 @@ export const resizeTourImages = catchAsync(
       .resize(2000, 1333)
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`src/public/img/tours/${req.body.imageCover}`);
+      .toFile(`public/img/tours/${req.body.imageCover}`);
     req.body.images = [];
     await Promise.all(
       //@ts-ignore
@@ -75,7 +75,7 @@ export const resizeTourImages = catchAsync(
           .resize(2000, 1333)
           .toFormat('jpeg')
           .jpeg({ quality: 90 })
-          .toFile(`src/public/img/tours/${image}`);
+          .toFile(`public/img/tours/${image}`);
 
         req.body.images.push(image);
       })
