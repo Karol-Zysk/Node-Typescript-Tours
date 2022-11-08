@@ -10,8 +10,7 @@ each time a user signup, attempts to reset the password, or purchases travel.
 <b>Main Technologies NodeJS, TypeScript, Express, MongoDB, mongoose, Stripe,
 Mutler.<b>
 
-##Live Demo
-<a href="https://documenter.getpostman.com/view/14950888/UVeFNS9W#da0f790e-0ffb-471b-891c-006a08e07150" target="_blank">link</a>
+##Live Demo <a href="https://tour-net.herokuapp.com/" target="_blank">link</a>
 
 If You want to try this app as user Login : user@example.com<br> Password:
 test1234<br> .
