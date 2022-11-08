@@ -26,7 +26,25 @@ export const aliasTopTour = async (
   next();
 };
 
-export const getAllTours = getAll(Tour);
+export const getAllTours = catchAsync(async (req, res, next) => {
+  // Execute the query
+  const features = new APIFeatures(Tour.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const allTours = await features.query;
+
+  // Send response
+  res.status(200).json({
+    result: allTours.length,
+    status: 'success',
+    data: {
+      allTours,
+    },
+  });
+});
 
 export const getTour = getOne(Tour, 'reviews');
 
