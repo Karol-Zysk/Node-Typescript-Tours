@@ -19,12 +19,15 @@ export class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // Sendgrid
-      return nodemailer.createTransport({
-        service: 'SendGrid',
+      // Hotmail 
+      //@ts-ignore
+      return nodemailer.createTransport('SMTP', {
+        host: process.env.HOTMAIL_HOST,
+        port: process.env.HOTMAIL_PORT,
+        secureConnection: false,
         auth: {
-          user: process.env.SENDGRID_USERNAME,
-          pass: process.env.SENDGRID_PASSWORD,
+          user: process.env.HOTMAIL_USERNAME,
+          pass: process.env.HOTMAIL_PASSWORD,
         },
       });
     }

@@ -7,7 +7,7 @@ import express, {
 } from 'express';
 
 import morgan from 'morgan';
-import compression from 'compression'
+import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -36,9 +36,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Set security HTTP headers
 app.use(
   helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: false,
+    // contentSecurityPolicy: false,
+    // crossOriginEmbedderPolicy: false,
+    // crossOriginResourcePolicy: false,
   })
 );
 
