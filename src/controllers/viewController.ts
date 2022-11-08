@@ -74,7 +74,7 @@ export const updateUserData = catchAsync(async (req, res, next) => {
 
 export const forgotPassword = (req: Request, res: Response) => {
   res.status(200).render('forgotpassword', {
-    title: 'Forgot Password',
+    title: 'Forgot Password?',
   });
 };
 
