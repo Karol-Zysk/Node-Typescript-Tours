@@ -28,7 +28,7 @@ import { AppError } from './utils/appError';
 export const app: Express = express();
 
 app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', path.join(__dirname, 'views'));
 
 //serving static files
 app.use(express.static(path.join(__dirname, 'public')));
