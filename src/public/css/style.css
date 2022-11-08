@@ -314,14 +314,7 @@ body {
   -ms-flex-align: center;
   align-items: center;
 }
-@media only screen and (max-width: 62.5em) {
-  .header {
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-  }
-}
+
 .header__logo img {
   height: 3.5rem;
 }
@@ -1321,4 +1314,104 @@ body {
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
   -webkit-transform: translateY(-2px);
   transform: translateY(-2px);
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+  .card-container {
+    max-width: 120rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 3rem;
+  }
+  .header {
+    padding: 0 1rem;
+    align-items: center;
+    display: flex;
+  }
+  .nav--user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2rem;
+    margin-top: 0;
+    margin-bottom: 0%;
+  }
+  .heading-secondary {
+    font-size: 1.5rem;
+  }
+  .cta__text {
+    font-size: 1.3rem;
+  }
+  .btn {
+    font-size: 1.2rem;
+  }
+  .cta__img {
+    height: 10rem;
+    width: 10rem;
+  }
+  .cta {
+    position: relative;
+    max-width: 105rem;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #fff;
+    padding: 4rem 3rem 4rem 14rem;
+  }
+  .nav__el:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+  .section-cta {
+    padding: 0;
+  }
+  .section-description {
+    flex-direction: column;
+  }
+  .heading-primary {
+    font-size: 2.2rem;
+  }
+  .header__logo img {
+    height: 2.5rem;
+  }
+  .nav--user {
+    flex-direction: row;
+    flex: 1.2;
+    justify-content: space-around;
+  }
+  .nav__el,
+  .nav__el:link,
+  .nav__el:visited {
+    color: #f7f7f7;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    margin-top: auto;
+    margin-bottom: auto;
+    text-decoration: none;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
+    font-weight: 400;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  nav__el {
+    margin-right: 1rem;
+  }
+  .main {
+    padding: 2.5rem 1.5rem;
+  }
+  .user-view {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 420px) {
 }
