@@ -30,6 +30,10 @@ export const getLoginForm = (req: Request, res: Response) => {
   res.status(200).render('login', { title: 'Login' });
 };
 
+export const getSignUpForm = (req: Request, res: Response) => {
+  res.status(200).render('signup', { title: 'Sign Up' });
+};
+
 export const getAccount = (req: Request, res: Response) => {
   res.status(200).render('account', { title: 'Account' });
 };
@@ -67,3 +71,16 @@ export const updateUserData = catchAsync(async (req, res, next) => {
     user: updatedUser,
   });
 });
+
+export const forgotPassword = (req: Request, res: Response) => {
+  res.status(200).render('forgotpassword', {
+    title: 'Forgot Password',
+  });
+};
+
+export const resetPassword = (req: Request, res: Response) => {
+  res.status(200).render('resetpassword', {
+    title: 'Reset Password',
+    resetToken: req.params.resetToken,
+  });
+};
