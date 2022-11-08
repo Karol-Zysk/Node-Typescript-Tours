@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.ts",
+    "start": "node dist/index.js",
+    "postinstall": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "set NODE_ENV=development&& ts-node-dev --respawn --transpile-only src/server.ts",
     "prod": "set NODE_ENV=production&& ts-node-dev --respawn --transpile-only src/server.ts",
     "seed": "ts-node-dev  --transpile-only src/dev-data/data/seed.ts",
     "watch:js": "parcel watch ./src/public/js/index.js --out-dir ./src/public/js --out-file bundle.js",
     "build:js": "parcel build ./src/public/js/index.js --out-dir ./src/public/js --out-file bundle.js",
-    "debug": "ndb src/server.ts"
+    "debug": "ndb src/server.ts",
+    "deploy": "git add . && git commit -m Heroku && git push heroku master"
   },
   "keywords": [],
   "author": "Karol Zyśk",
@@ -63,5 +65,8 @@
     "stripe": "^10.16.0",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
+  },
+  "engines": {
+    "node": "16.17.0"
   }
 }
