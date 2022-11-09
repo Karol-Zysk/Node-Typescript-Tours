@@ -62,6 +62,13 @@ app.post(
   express.raw({ type: "application/json" }),
   webhookCheckout
 );
+app.use((req, res, next) => {
+  if (req.originalUrl === '/webhook') {
+    next(); // Do nothing with the body because I need it in a raw state.
+  } else {
+    express.json()(req, res, next);  // ONLY do express.json() if the received request is NOT a WebHook from Stripe.
+  }
+});
 
 //Body parser -> reading data from body to req.body
 app.use(express.json({ limit: "10kb" }));
