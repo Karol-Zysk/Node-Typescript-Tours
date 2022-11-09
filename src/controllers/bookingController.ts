@@ -54,10 +54,9 @@ const createBookingCheckout = async (session: any) => {
   const tour = session.client_reference_id;
   //@ts-ignore
   const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = 200;
+  const price = session.line_items[0].price_data.unit_amount;
 
   await Booking.create({ tour, user, price });
-  console.log(user);
 };
 
 export const webhookCheckout = (
