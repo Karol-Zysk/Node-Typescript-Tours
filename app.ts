@@ -15,7 +15,7 @@ import xss from "xss-clean";
 import hpp from "hpp";
 import path from "path";
 import pug from "pug";
-import cors from 'cors'
+import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { globalErrorHandler } from "./src/controllers/errorController";
@@ -39,9 +39,9 @@ app.use(express.static(path.resolve(process.cwd(), "src/public")));
 //Set security HTTP headers
 app.use(
   helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: false,
+    // contentSecurityPolicy: false,
+    // crossOriginEmbedderPolicy: false,
+    // crossOriginResourcePolicy: false,
   })
 );
 
