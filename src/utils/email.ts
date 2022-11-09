@@ -18,28 +18,24 @@ export class Email {
   }
 
   newTransport() {
-    if (process.env.NODE_ENV === 'production') {
-      // Hotmail 
-      //@ts-ignore
-      return nodemailer.createTransport('SMTP', {
-        host: process.env.HOTMAIL_HOST,
-        port: process.env.HOTMAIL_PORT,
-        secureConnection: false,
-        auth: {
-          user: process.env.HOTMAIL_USERNAME,
-          pass: process.env.HOTMAIL_PASSWORD,
-        },
-      });
-    }
-
+    // if (process.env.NODE_ENV === 'production') {
     return nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: Number(process.env.EMAIL_PORT),
+      service: 'SendGrid',
       auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: process.env.SENDGRID_USERNAME,
+        pass: process.env.SENDGRID_PASSWORD,
       },
     });
+    // }
+
+    // return nodemailer.createTransport({
+    //   host: process.env.EMAIL_HOST,
+    //   port: Number(process.env.EMAIL_PORT),
+    //   auth: {
+    //     user: process.env.EMAIL_USERNAME,
+    //     pass: process.env.EMAIL_PASSWORD,
+    //   },
+    // });
   }
 
   // Send the actual email

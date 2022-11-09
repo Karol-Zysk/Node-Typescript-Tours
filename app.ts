@@ -24,6 +24,7 @@ import reviewRouter from "./src/routes/reviewRoutes";
 import bookingRouter from "./src/routes/bookingRoutes";
 import viewRouter from "./src/routes/viewRoutes";
 import { AppError } from "./src/utils/appError";
+import { webhookCheckout } from "./src/controllers/bookingController";
 
 export const app: Express = express();
 
@@ -53,6 +54,12 @@ const limiter = rateLimit({
 });
 //Limit request from same API
 app.use("/api", limiter);
+
+app.use(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 
 //Body parser -> reading data from body to req.body
 app.use(express.json({ limit: "10kb" }));
