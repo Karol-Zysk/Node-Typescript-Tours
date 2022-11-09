@@ -16,10 +16,10 @@ router.use(protect);
 
 router.get('/checkout-session/:tourId', getCheckoutSession);
 
-router.use(restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE));
-
 router.route('/').get(getAllBookings).post(createBooking);
 
 router.route('/:id').get(getBooking).patch(updateBooking).delete(deleteBooking);
+
+router.use(restrictTo(Roles.ADMIN, Roles.LEAD_GUIDE));
 
 export default router;
