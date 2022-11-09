@@ -39,9 +39,9 @@ app.use(express.static(path.resolve(process.cwd(), "src/public")));
 //Set security HTTP headers
 app.use(
   helmet({
-    // contentSecurityPolicy: false,
-    // crossOriginEmbedderPolicy: false,
-    // crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
   })
 );
 
