@@ -15,6 +15,7 @@ import xss from "xss-clean";
 import hpp from "hpp";
 import path from "path";
 import pug from "pug";
+import cors from 'cors'
 import cookieParser from "cookie-parser";
 
 import { globalErrorHandler } from "./src/controllers/errorController";
@@ -31,6 +32,7 @@ export const app: Express = express();
 app.set("view engine", "pug");
 app.set("views", path.resolve(process.cwd(), "src/views"));
 
+app.options("*", cors());
 //serving static files
 app.use(express.static(path.resolve(process.cwd(), "src/public")));
 
