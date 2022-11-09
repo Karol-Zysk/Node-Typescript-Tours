@@ -55,7 +55,7 @@ const limiter = rateLimit({
 //Limit request from same API
 app.use("/api", limiter);
 
-app.use(
+app.post(
   "/webhook-checkout",
   express.raw({ type: "application/json" }),
   webhookCheckout
