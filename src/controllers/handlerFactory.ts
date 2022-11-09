@@ -41,7 +41,6 @@ export const updateOne = (Model: Model<any, {}, {}>) =>
 export const createOne = (Model: Model<any, {}, {}>) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const newDoc = await Model.create(req.body);
-    console.log();
     
 
     res.status(201).json({
