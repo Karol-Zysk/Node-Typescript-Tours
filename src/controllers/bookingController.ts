@@ -43,8 +43,6 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
       },
     ],
   });
-  const signature = req.headers['stripe-signature'];
-  console.log(signature);
 
   res.status(200).json({
     status: 'success',
@@ -56,7 +54,7 @@ const createBookingCheckout = async (session: any) => {
   const tour = session.client_reference_id;
   //@ts-ignore
   const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = session.line_items[0].price_data.unit_amount / 100;
+  const price = session.display_items[0].price_data.unit_amount / 100;
 
   await Booking.create(tour, user, price);
   console.log(user);
