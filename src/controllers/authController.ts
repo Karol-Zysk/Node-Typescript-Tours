@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/appError';
 import { CurrentUser } from '../interfaces/interfaces';
-import { Email, sendEmail } from '../utils/email';
+import { Email } from '../utils/email';
 import crypto from 'crypto';
 import { IUser, IUserDocument, Roles } from '../interfaces/userModelInterfaces';
 import { Document } from 'mongoose';

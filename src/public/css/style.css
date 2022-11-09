@@ -369,7 +369,7 @@ body {
     to(#28b487)
   );
   background-image: linear-gradient(to right bottom, #7dd56f, #28b487);
-  opacity: 0.85;
+  opacity: 0;
 }
 
 .heading-box {
@@ -380,9 +380,17 @@ body {
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+.heading-box__text {
+  font-size: 2rem;
+  text-shadow: -2px 1px 2px black;
+}
 .heading-box__group {
   color: #f7f7f7;
   margin-top: 3rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.7rem;
+  box-shadow: 0.5rem 0.5rem 0.5rem rgba(0, 0, 0, 0.838);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -392,6 +400,9 @@ body {
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.071);
+  width: fit-content;
 }
 .heading-box__detail {
   font-size: 1.5rem;
@@ -415,7 +426,7 @@ body {
   height: 2rem;
   width: 2rem;
   fill: currentColor;
-  -webkit-filter: drop-shadow(0 0.75rem 0.5rem rgba(0, 0, 0, 0.25));
+  -webkit-filter: drop-shadow(0 0.75rem 0.5rem rgba(0, 0, 0, 0.95));
   filter: drop-shadow(0 0.75rem 0.5rem rgba(0, 0, 0, 0.25));
 }
 
@@ -1109,7 +1120,7 @@ body {
     to(#28b487)
   );
   background-image: linear-gradient(to right bottom, #7dd56f, #28b487);
-  opacity: 0.7;
+  opacity: 0;
 }
 .card__picture-img {
   -o-object-fit: cover;
@@ -1371,10 +1382,13 @@ body {
     flex-direction: column;
   }
   .heading-primary {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
+    width: 90%;
   }
-  .header__logo img {
+  .header__logo {
     height: 2.5rem;
+    margin-top: auto;
+    margin-bottom: 2.8rem;
   }
   .nav--user {
     flex-direction: row;
@@ -1411,7 +1425,26 @@ body {
   .user-view {
     flex-direction: column;
   }
+  .heading-box__group {
+    display: none;
+  }
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: 490px) {
+  .nav__el--cta {
+    padding: 0.5rem 1rem;
+  }
+  .nav__el--logout {
+    font-size: 1rem;
+  }
+  a.nav__el {
+    font-size: 1rem;
+  }
+
+  .nav--user {
+    margin-right: 5px;
+  }
+  .heading-box__group {
+    margin-top: 0;
+  }
 }

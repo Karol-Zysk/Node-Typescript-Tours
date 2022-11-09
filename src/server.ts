@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config({ path: './config.env' });
-import { app } from '../app';
+import { app } from './app';
 import mongoose from 'mongoose';
 
 process.on('uncaughtException', (err) => {
@@ -36,5 +36,13 @@ process.on('unhandledRejection', (err: any) => {
   console.log('Unhandled Rejection, Shutting Down');
   server.close(() => {
     process.exit(1);
+  });
+});
+
+// SIGTERM--> A signal that stops the program from running
+process.on('SIGTERM', () => {
+  console.log('👋zz SIGTERM RECEIVED, shutting down gracefully');
+  server.close(() => {
+    console.log('💥 process terminated');
   });
 });
