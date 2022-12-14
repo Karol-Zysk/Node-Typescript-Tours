@@ -9,7 +9,7 @@ basically), with an improved user experience. An emailing feature is provided
 each time a user signup, attempts to reset the password, or purchases travel.
 <br>
 
-<h2>  <a href="https://tour-net.herokuapp.com/" target="_blank">Live Demo</a></h2>
+<h2>  <a href="https://tour-nett.onrender.com/" target="_blank">Live Demo</a></h2>
 <br><br>
 ### **Postman APIs:**
 
