@@ -32,7 +32,7 @@ export const app: Express = express();
 app.set('view engine', 'pug');
 app.set('views', path.resolve(process.cwd(), 'src/views'));
 
-app.options('*', cors());
+app.use(cors());
 //serving static files
 app.use(express.static(path.resolve(process.cwd(), 'src/public')));
 
