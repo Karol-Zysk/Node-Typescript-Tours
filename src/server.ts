@@ -15,7 +15,7 @@ const DB = `${process.env.DATABASE_CONNECTION}`.replace(
 );
 
 mongoose
-  .connect(DB, {
+  .connect(`${DB}`, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
