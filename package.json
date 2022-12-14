@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": " npm install && tsc",
     "start:build": "tsc -w & tscp -w",
     "start": "node dist/src/server.js",
     "postinstall": "tsc",
